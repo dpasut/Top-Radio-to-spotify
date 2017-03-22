@@ -1,3 +1,5 @@
 * TODO Switch to SQlite
+* TODO "live" updates of song count
+* TODO expiring song count after x number of days, current common songs only
 * TODO Spotify playlist init
 * TODO Spotify playlist update/re-arrange/etc.

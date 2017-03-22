@@ -1,0 +1,3 @@
+* TODO Switch to SQlite
+* TODO Spotify playlist init
+* TODO Spotify playlist update/re-arrange/etc.

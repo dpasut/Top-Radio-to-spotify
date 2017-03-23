@@ -4,14 +4,14 @@ CREATE TABLE IF NOT EXISTS raw_data
   data JSONB
 );
 
--- CREATE VIEW songs
--- AS
--- with base as
--- (
---   select jsonb_array_elements(data->'data'->'songs') as song
---   from raw_data
--- )
--- select song->>'artist_name' as artist,
---        song->>'song_name' as song,
---        to_timestamp((song->>'last_played')::bigint) as play_time
--- from base;
+CREATE VIEW IF NOT EXISTS songs
+AS
+WITH base AS
+(
+  SELECT json_each.value AS song
+  FROM json_each(json(data), '$.data.songs'), raw_data
+)
+SELECT json_extract(song, '$.artist_name') AS artist,
+       json_extract(song, '$.song_name') AS song,
+       json_extract(song, '$.last_played') AS play_time
+FROM base;

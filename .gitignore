@@ -2,3 +2,4 @@
 /spotify-creds.json
 /data.db
 /.cache-*
+/creds.json

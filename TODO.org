@@ -7,3 +7,5 @@
 * TODO Spotify playlist init
   Multiple playlists? 1 week/2 week/1 month. Playlist length?
 * TODO Spotify playlist update/re-arrange/etc.
+  Don't have to actually do a diff:
+  https://developer.spotify.com/web-api/replace-playlists-tracks/

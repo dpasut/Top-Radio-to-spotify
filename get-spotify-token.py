@@ -21,7 +21,7 @@ if __name__ == '__main__':
                                    cache_path=".cache-" + args.username)
     token_info = sp_oauth.get_cached_token()
 
-    if not token_info:
+    if not token_info or args.force:
         auth_url = sp_oauth.get_authorize_url()
         print("Please navigate here: {}".format(auth_url))
         print()

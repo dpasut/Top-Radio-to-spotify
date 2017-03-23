@@ -3,6 +3,7 @@
 import json
 import spotipy.oauth2 as oauth2
 import argparse
+from credentials import Credentials
 
 scopes = ['playlist-modify-public', 'playlist-modify-private',
           'playlist-read-private', 'playlist-read-collaborative']
@@ -14,8 +15,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    data = json.load(open('spotify-creds.json'))
-    sp_oauth = oauth2.SpotifyOAuth(data['id'], data['secret'],
+    credentials = Credentials()
+    sp_oauth = oauth2.SpotifyOAuth(credentials.spotify_id,
+                                   credentials.spotify_secret,
                                    "http://localhost/",
                                    scope=' '.join(scopes),
                                    cache_path=".cache-" + args.username)

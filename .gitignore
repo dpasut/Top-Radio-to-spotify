@@ -3,3 +3,4 @@
 /data.db
 /.cache-*
 /creds.json
+*.pyc

@@ -16,7 +16,7 @@ if __name__ == '__main__':
                                 headers={'User-Agent': USER_AGENT}).json()
             date = data['data']['startDate']
             conn.execute("""
-                         INSERT INTO raw_data (date, data)
+                         INSERT OR REPLACE INTO raw_data (date, data)
                          SELECT datetime(?, 'start of day'), ?
                          """,
                          (date, json.dumps(data)))

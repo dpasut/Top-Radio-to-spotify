@@ -1,5 +1,9 @@
-* TODO Switch to SQlite
-* TODO "live" updates of song count
+* DONE Switch to SQlite
+* TODO "live" updates of song count [0/3]
+  - [ ] Instead of 83, do a date subtract to get min.
+  - [ ] Pre-check DB for start date.
+  - [ ] Just replace the current day each time.
 * TODO expiring song count after x number of days, current common songs only
 * TODO Spotify playlist init
+  Multiple playlists? 1 week/2 week/1 month. Playlist length?
 * TODO Spotify playlist update/re-arrange/etc.

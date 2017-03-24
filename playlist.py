@@ -48,16 +48,23 @@ if __name__ == '__main__':
     results = sp.current_user_playlists(limit=50)
 
     names = [a['name'] for a in results['items']]
+    playlist_ids = [b['id'] for b in results['items']]
 
     need_new = True
 
+    track_ids= range(len(DATA))
 
     for name in names:
         if name == "Top 100 on The Edge":
-            #update playlist with new top 100
-            print("Playlist already exists, update instead")
+            playlist_id = playlist_ids[names.index(name)]
             need_new = False
 
 
     if need_new == True:
         playlists = sp.user_playlist_create(username,"Top 100 on The Edge")
+        playlist_id = playlists['id']
+
+    for i in range(len(DATA)):
+        track_ids[i] = find_track_id(DATA[i][0],DATA[i][1])
+
+    tracks = sp.user_playlist_add_tracks(username, playlist_id, track_ids)

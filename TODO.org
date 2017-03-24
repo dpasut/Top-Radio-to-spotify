@@ -9,3 +9,4 @@
 * TODO Spotify playlist update/re-arrange/etc.
   Don't have to actually do a diff:
   https://developer.spotify.com/web-api/replace-playlists-tracks/
+* TODO Bloody Docker

@@ -1,6 +1,6 @@
 * DONE Switch to SQlite
-* TODO "live" updates of song count [0/3]
-  - [ ] Instead of 83, do a date subtract to get min.
+* TODO "live" updates of song count [1/3]
+  - [X] Instead of 83, do a date subtract to get min.
   - [ ] Pre-check DB for start date.
   - [ ] Just replace the current day each time.
 * TODO expiring song count after x number of days, current common songs only

@@ -19,6 +19,14 @@ DATA = [("Milky Chance", "Cocoon"),
         ("Bastille", "Blame"),
         ("Kings Of Leon", "Reverend")]
 
+def find_track_id(artist_name,track_name):
+    r = sp.search(track_name)
+    for track in r['tracks']['items']:
+        if (track['artists'][0]['name'].lower()==artist_name.lower()):
+            track_id = track['id']
+            print(track_id)
+            return track_id
+
 if __name__ == '__main__':
     cred = Credentials()
 

@@ -11,3 +11,4 @@ class Credentials:
         self.spotify_id = data['spotify_id']
         self.spotify_secret = data['spotify_secret']
         self.spotify_user_access_token = data['spotify_user_access_token']
+        self.spotify_username = data['spotify_username']

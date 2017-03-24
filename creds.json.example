@@ -1,5 +1,6 @@
 {
     "spotify_id": "",
     "spotify_secret": "",
-    "spotify_user_access_token": ""
+    "spotify_user_access_token": "",
+    "spotify_username": ""
 }

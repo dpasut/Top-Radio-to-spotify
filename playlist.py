@@ -6,39 +6,33 @@ import spotipy
 import spotipy.util as util
 from credentials import Credentials
 import json
+import sqlite3
 
-
-DATA = [("Milky Chance", "Cocoon"),
-        ("Rag'n'bone Man", "Human"),
-        ("Twenty One Pilots", "Heavydirtysoul"),
-        ("Japandroids", "Near To The Wild Heart Of Life"),
-        ("Mother Mother", "The Drugs"),
-        ("Green Day", "Still Breathing"),
-        ("Cage The Elephant", "Cold Cold Cold"),
-        ("Imagine Dragons", "Believer"),
-        ("Bastille", "Blame"),
-        ("Kings Of Leon", "Reverend")]
 
 def find_track_id(artist_name,track_name):
+    #theres an issue with tracks that can't be found right now..
     r = sp.search(track_name)
     for track in r['tracks']['items']:
         if (track['artists'][0]['name'].lower()==artist_name.lower()):
             track_id = track['id']
-            print(track_id)
+            print("Track id found for ",artist_name,track_name)
             return track_id
+        else:
+            print("failed to find id for ",artist_name,track_name)
 
 if __name__ == '__main__':
     cred = Credentials()
+    conn = sqlite3.connect("data.db")
+    c = conn.cursor()
+    c.execute('select * from last_week_songs')
+    data = c.fetchall()
 
     # list playlists
     # create if not exist
-    # get contents
-    # compare to DATA
-    # if different, change to match
+    # update playlist(s)
     # https://developer.spotify.com/web-api/replace-playlists-tracks/
 
     token = cred.spotify_user_access_token
-
 
     sp = spotipy.Spotify(auth=token)
     sp.trace = False
@@ -52,7 +46,7 @@ if __name__ == '__main__':
 
     need_new = True
 
-    track_ids= range(len(DATA))
+    track_ids= range(min(len(data),100))
 
     for name in names:
         if name == "Top 100 on The Edge":
@@ -64,7 +58,7 @@ if __name__ == '__main__':
         playlists = sp.user_playlist_create(username,"Top 100 on The Edge")
         playlist_id = playlists['id']
 
-    for i in range(len(DATA)):
-        track_ids[i] = find_track_id(DATA[i][0],DATA[i][1])
+    for i in range(min(len(data),100)):
+        track_ids[i] = find_track_id(str(data[i][0]),str(data[i][1]))
 
-    tracks = sp.user_playlist_add_tracks(username, playlist_id, track_ids)
+    tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)

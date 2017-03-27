@@ -5,20 +5,23 @@ from pprint import pprint
 import spotipy
 import spotipy.util as util
 from credentials import Credentials
+from tqdm import tqdm
 import json
 import sqlite3
+import re
 
 
-def find_track_id(artist_name,track_name):
-    #theres an issue with tracks that can't be found right now..
-    r = sp.search(track_name)
+
+def find_track_id(artist_name,track_name,track_ids,not_found):
+    track_name = track_name.replace('The ', '').strip()
+    track_name = re.sub(r'\([^)]*\)', '', track_name)
+
+    r = sp.search("artist:{} track:{}*".format(artist_name, track_name), type='track')
+
     for track in r['tracks']['items']:
-        if (track['artists'][0]['name'].lower()==artist_name.lower()):
-            track_id = track['id']
-            print("Track id found for ",artist_name,track_name)
-            return track_id
-        else:
-            print("failed to find id for ",artist_name,track_name)
+        track_id = track['id']
+        track_ids.append(track_id)
+        break
 
 if __name__ == '__main__':
     cred = Credentials()
@@ -46,7 +49,8 @@ if __name__ == '__main__':
 
     need_new = True
 
-    track_ids= range(min(len(data),100))
+    track_ids = []
+    not_found = []
 
     for name in names:
         if name == "Top 100 on The Edge":
@@ -58,7 +62,10 @@ if __name__ == '__main__':
         playlists = sp.user_playlist_create(username,"Top 100 on The Edge")
         playlist_id = playlists['id']
 
-    for i in range(min(len(data),100)):
-        track_ids[i] = find_track_id(str(data[i][0]),str(data[i][1]))
 
+    for i in tqdm(range(min(len(data),100))):
+        find_track_id(str(data[i][0]),str(data[i][1]),track_ids,not_found)
+       # track_ids[i] = find_track_id(str(data[i][0]),str(data[i][1]))
+
+    print(len(track_ids))
     tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)

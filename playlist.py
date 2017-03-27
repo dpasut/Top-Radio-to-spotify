@@ -12,7 +12,7 @@ import re
 
 
 
-def find_track_id(artist_name,track_name,track_ids,not_found):
+def find_track_id(artist_name,track_name,track_ids):
     track_name = track_name.replace('The ', '').strip()
     track_name = re.sub(r'\([^)]*\)', '', track_name)
     r = sp.search("artist:{} track:{}*".format(artist_name, track_name), type='track')
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
 
     for i in tqdm(range(min(len(data),100))):
-        find_track_id(str(data[i][0]),str(data[i][1]),track_ids,not_found)
+        find_track_id(str(data[i][0]),str(data[i][1]),track_ids)
 
     print(len(track_ids))
     tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)

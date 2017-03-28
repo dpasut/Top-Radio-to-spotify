@@ -5,9 +5,14 @@
   - [X] Just replace the current day each time.
   - [ ] Timezone crap
 * TODO expiring song count after x number of days, current common songs only
-* TODO Spotify playlist init
-  Multiple playlists? 1 week/2 week/1 month. Playlist length?
-* TODO Spotify playlist update/re-arrange/etc.
+* DONE Spotify playlist init
+* TODO Multiple playlists?
+  - [X] Top songs of the past week
+  - [ ] Top songs of the past two weeks
+  - [ ] Top songs of the past month
+  - [ ] Custom length of playlists
+* DONE Spotify playlist update/re-arrange/etc.
   Don't have to actually do a diff:
   https://developer.spotify.com/web-api/replace-playlists-tracks/
-* TODO Bloody Docker
+* DONE Bloody Docker
+* TODO Caching `track_id` in data.db

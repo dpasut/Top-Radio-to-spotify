@@ -26,7 +26,7 @@ if __name__ == '__main__':
     cred = Credentials()
     conn = sqlite3.connect("data.db")
     c = conn.cursor()
-    c.execute('select * from last_week_songs')
+    c.execute('select * from last_week_songs order by play_count desc, random() limit 100')
     data = c.fetchall()
 
     # list playlists
@@ -64,5 +64,5 @@ if __name__ == '__main__':
     for i in tqdm(range(min(len(data),100))):
         find_track_id(str(data[i][0]),str(data[i][1]),track_ids)
 
-    print(len(track_ids))
+    print(len(track_ids), 'songs uploaded to spotify! Enjoy!')
     tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)

@@ -17,17 +17,28 @@ BASE_LINK = 'http://www.edge.ca/api/v1/music/broadcastHistory?accountID=36&day=-
 
 
 def find_track_id(song_data,track_ids,track_list):
+    #
+    # Find and cache track ids
+    #
+
     artist_name = str(song_data[0])
+
+    # Remove "The" from track names, and stuff between brackets.
+    # No one likes alternate song titles
     track_name = str(song_data[1]).replace('The ', '').strip()
     track_name = re.sub(r'\([^)]*\)', '', track_name)
 
+    # Check if track is in track_list table, if it is, use that track_id
     search_new = True
     for i in range(len(track_list)):
         if (artist_name == str(track_list[i][1])) and (track_name == track_list[i][2]):
             trackID = track_list[i][0]
             track_ids.append(trackID)
             search_new = False
+            break
 
+    # If track was NOT found in track_list table, search spotify,
+    # get track id, and update the table
     if search_new == True:
         r = sp.search("artist:{} track:{}*".format(artist_name, track_name), type='track')
         for track in r['tracks']['items']:
@@ -107,5 +118,5 @@ if __name__ == '__main__':
         new_trackID = find_track_id(song_data[i],track_ids,track_list)
 
     # Upload songs to Spotify!
-    #tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
+    tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
     print(len(track_ids), 'songs uploaded to spotify! Enjoy!')

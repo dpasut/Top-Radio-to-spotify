@@ -37,6 +37,7 @@ def find_track_id(artist_name,track_name,track_ids):
 
 if __name__ == '__main__':
 
+    # Load database and create table, if it doesn't exist already
     with sqlite3.connect('data.db') as conn:
         conn.executescript(open('schema.sql').read())
         cur = conn.cursor()
@@ -58,23 +59,26 @@ if __name__ == '__main__':
                          (date, json.dumps(data)))
             conn.commit()
 
+        # Create a list of song data from last_week_songs table
         cur.execute('select * from last_week_songs order by play_count desc, random()')
         song_data = cur.fetchall()
 
+    # Log into Spotify and get username
     cred = Credentials()
     token = cred.spotify_user_access_token
     username = cred.spotify_username
     sp = spotipy.Spotify(auth=token)
     sp.trace = False
 
+    # Get a list of playlist names and ids
     results = sp.current_user_playlists(limit=50)
-
     names = [a['name'] for a in results['items']]
     playlist_ids = [b['id'] for b in results['items']]
 
-    need_new = True
 
-    track_ids = []
+    # Create a new playlist if it does not exist already,
+    # Get playlist id if it does exist
+    need_new = True
 
     for name in names:
         if name == "Top 100 on The Edge":
@@ -86,9 +90,13 @@ if __name__ == '__main__':
         playlists = sp.user_playlist_create(username,"Top 100 on The Edge")
         playlist_id = playlists['id']
 
-
+    # Find track ids for each song in song_data
+    # TODO cache ids for speed improvment
+    track_ids = []
     for i in tqdm(range(min(len(song_data),100))):
         find_track_id(str(song_data[i][0]),str(song_data[i][1]),track_ids)
 
-    print(len(track_ids), 'songs uploaded to spotify! Enjoy!')
+
+    # Upload songs to Spotify!
     tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
+    print(len(track_ids), 'songs uploaded to spotify! Enjoy!')

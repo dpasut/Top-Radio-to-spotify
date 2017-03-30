@@ -23,3 +23,10 @@ FROM songs
 WHERE play_time >= CAST(strftime('%s', datetime('now', '-7 days')) AS INTEGER)
 GROUP BY artist, song
 ORDER BY count(*) DESC;
+
+CREATE TABLE IF NOT EXISTS track_id
+(
+    song_id text NOT NULL PRIMARY KEY,
+    artist text NOT NULL,
+    song text NOT NULL
+);

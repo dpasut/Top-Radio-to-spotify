@@ -63,11 +63,9 @@ if __name__ == '__main__':
 
     cred = Credentials()
     token = cred.spotify_user_access_token
-
+    username = cred.spotify_username
     sp = spotipy.Spotify(auth=token)
     sp.trace = False
-    user = sp.current_user()
-    username = user['id']
 
     results = sp.current_user_playlists(limit=50)
 

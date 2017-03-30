@@ -1,23 +1,15 @@
 #!/usr/bin/env python2
-import sys
-from pprint import pprint
-
-import spotipy
-import spotipy.util as util
-from credentials import Credentials
-from tqdm import tqdm
 import json
-import sqlite3
 import re
-
 import requests
+import spotipy
 import sqlite3
-from datetime import datetime
+import sys
 
-    # list playlists
-    # create if not exist
-    # update playlist(s)
-    # https://developer.spotify.com/web-api/replace-playlists-tracks/
+from datetime import datetime
+from credentials import Credentials
+from pprint import pprint
+from tqdm import tqdm
 
 
 USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
@@ -79,15 +71,15 @@ if __name__ == '__main__':
     # Create a new playlist if it does not exist already,
     # Get playlist id if it does exist
     need_new = True
-
+    playlist_name = "Top 100 on The Edge"
     for name in names:
-        if name == "Top 100 on The Edge":
+        if name == playlist_name:
             playlist_id = playlist_ids[names.index(name)]
             need_new = False
 
 
     if need_new == True:
-        playlists = sp.user_playlist_create(username,"Top 100 on The Edge")
+        playlists = sp.user_playlist_create(username,playlist_name)
         playlist_id = playlists['id']
 
     # Find track ids for each song in song_data

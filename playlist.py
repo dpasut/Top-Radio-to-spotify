@@ -16,15 +16,31 @@ USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 BASE_LINK = 'http://www.edge.ca/api/v1/music/broadcastHistory?accountID=36&day=-{}'
 
 
-def find_track_id(artist_name,track_name,track_ids):
-    track_name = track_name.replace('The ', '').strip()
+def find_track_id(song_data,track_ids,track_list):
+    artist_name = str(song_data[0])
+    track_name = str(song_data[1]).replace('The ', '').strip()
     track_name = re.sub(r'\([^)]*\)', '', track_name)
-    r = sp.search("artist:{} track:{}*".format(artist_name, track_name), type='track')
 
-    for track in r['tracks']['items']:
-        track_id = track['id']
-        track_ids.append(track_id)
-        break
+    search_new = True
+    for i in range(len(track_list)):
+        if (artist_name == str(track_list[i][1])) and (track_name == track_list[i][2]):
+            trackID = track_list[i][0]
+            track_ids.append(trackID)
+            search_new = False
+
+    if search_new == True:
+        r = sp.search("artist:{} track:{}*".format(artist_name, track_name), type='track')
+        for track in r['tracks']['items']:
+            trackID = track['id']
+            track_ids.append(trackID)
+            #update db
+            with sqlite3.connect('data.db') as conn:
+                conn.execute("""
+                             INSERT INTO track_id
+                             VALUES (?, ?, ?)
+                             """,(trackID,artist_name,track_name))
+                conn.commit()
+            break
 
 
 if __name__ == '__main__':
@@ -52,8 +68,10 @@ if __name__ == '__main__':
             conn.commit()
 
         # Create a list of song data from last_week_songs table
-        cur.execute('select * from last_week_songs order by play_count desc, random()')
+        cur.execute('select * from last_week_songs order by play_count desc, random() limit 100')
         song_data = cur.fetchall()
+        cur.execute('select * from track_id')
+        track_list = cur.fetchall()
 
     # Log into Spotify and get username
     cred = Credentials()
@@ -86,9 +104,8 @@ if __name__ == '__main__':
     # TODO cache ids for speed improvment
     track_ids = []
     for i in tqdm(range(min(len(song_data),100))):
-        find_track_id(str(song_data[i][0]),str(song_data[i][1]),track_ids)
-
+        new_trackID = find_track_id(song_data[i],track_ids,track_list)
 
     # Upload songs to Spotify!
-    tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
+    #tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
     print(len(track_ids), 'songs uploaded to spotify! Enjoy!')

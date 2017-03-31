@@ -79,7 +79,7 @@ if __name__ == '__main__':
             conn.commit()
 
         # Create a list of song data from last_week_songs table
-        cur.execute('select * from last_week_songs order by play_count desc, random() limit 100')
+        cur.execute('select * from last_week_songs order by play_count desc, random()')
         song_data = cur.fetchall()
         cur.execute('select * from track_id')
         track_list = cur.fetchall()
@@ -114,9 +114,11 @@ if __name__ == '__main__':
     # Find track ids for each song in song_data
     # TODO cache ids for speed improvment
     track_ids = []
-    for i in tqdm(range(min(len(song_data),100))):
-        new_trackID = find_track_id(song_data[i],track_ids,track_list)
-
+    for i in range(len(song_data)):
+        if len(track_ids)<100:
+            new_trackID = find_track_id(song_data[i],track_ids,track_list)
+        else:
+            break
     # Upload songs to Spotify!
     tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
     print(len(track_ids), 'songs uploaded to spotify! Enjoy!')

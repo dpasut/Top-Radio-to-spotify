@@ -121,4 +121,4 @@ if __name__ == '__main__':
             break
     # Upload songs to Spotify!
     tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
-    print(len(track_ids), 'songs uploaded to spotify! Enjoy!')
+    print(len(track_ids), "songs uploaded to spotify! Enjoy!")

@@ -4,13 +4,13 @@
   - [X] Pre-check DB for start date.
   - [X] Just replace the current day each time.
   - [ ] Timezone crap
-* TODO expiring song count after x number of days, current common songs only
+* DONE expiring song count after x number of days, current common songs only
 * DONE Spotify playlist init
 * TODO Multiple playlists? [1/4]
   - [X] Top songs of the past week
-  - [ ] Top songs of the past two weeks
-  - [ ] Top songs of the past month
-  - [ ] Custom length of playlists
+  - [ ] Top songs of 2017
+  - [ ] Top songs of "all time"
+  - [ ] Top 25s of all playlists as well
 * DONE Spotify playlist update/re-arrange/etc.
   Don't have to actually do a diff:
   https://developer.spotify.com/web-api/replace-playlists-tracks/

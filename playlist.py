@@ -144,3 +144,6 @@ if __name__ == '__main__':
 
     playlist_name = "Top 100 on The Edge"
     create_update_playlist(playlist_name,song_data_top100,track_id_list,sp,username,pl_names,playlist_ids)
+
+    #playlist_2017 = "Top 100 on The Edge in 2017"
+    #create_update_playlist(playlist_2017,song_data_2017,track_id_list,sp,username,pl_names,playlist_ids)

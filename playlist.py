@@ -87,15 +87,14 @@ def load_data():
         song_data_top100 = cur.fetchall()
 
         # TODO: add top 100 of 2017 playlist
-        #cur.execute('select * from 2017_songs order by play_count desc, random()')
-        #song_data_2017 = cur.fetchall()
+        cur.execute('select * from top_songs_2017 order by play_count desc, random()')
+        song_data_2017 = cur.fetchall()
 
         # All previously searched songs and ids
         cur.execute('select * from track_id')
         track_list = cur.fetchall()
 
-        return (song_data_top100,track_list)
-        # return (song_data_top100,song_data_2017,track_list)
+        return (song_data_top100,song_data_2017,track_list)
 
 def log_in():
     # Log into Spotify and get username
@@ -135,15 +134,15 @@ def create_update_playlist(playlist_name,song_data,track_id_list,sp,username,pl_
             break
     # Upload songs to Spotify!
     tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
-    print(len(track_ids), "songs uploaded to spotify! Enjoy!")
+    print(len(track_ids), "songs uploaded to spotify in playlist",playlist_name)
 
 
 if __name__ == '__main__':
-    (song_data_top100, track_id_list) = load_data()
+    (song_data_top100, song_data_2017, track_id_list) = load_data()
     (sp,username,pl_names,playlist_ids) = log_in()
 
     playlist_name = "Top 100 on The Edge"
     create_update_playlist(playlist_name,song_data_top100,track_id_list,sp,username,pl_names,playlist_ids)
 
-    #playlist_2017 = "Top 100 on The Edge in 2017"
-    #create_update_playlist(playlist_2017,song_data_2017,track_id_list,sp,username,pl_names,playlist_ids)
+    playlist_2017 = "Top 100 on The Edge in 2017"
+    create_update_playlist(playlist_2017,song_data_2017,track_id_list,sp,username,pl_names,playlist_ids)

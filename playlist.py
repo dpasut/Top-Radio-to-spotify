@@ -133,6 +133,7 @@ def create_update_playlist(playlist_name,song_data,track_id_list,sp,username,pl_
             new_trackID = find_track_id(song_data[i],track_ids,track_id_list)
         else:
             break
+
     # Upload songs to Spotify!
     tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
     print(len(track_ids), "songs uploaded to spotify in playlist",playlist_name)
@@ -142,11 +143,11 @@ if __name__ == '__main__':
     (song_data_top100, song_data_2017, song_data_all_time, track_id_list) = load_data()
     (sp,username,pl_names,playlist_ids) = log_in()
 
-    playlist_name = "Top 100 on The Edge"
+    playlist_name = "Top 100 on 102.1 The Edge"
     create_update_playlist(playlist_name,song_data_top100,track_id_list,sp,username,pl_names,playlist_ids)
 
-    playlist_2017 = "Top 100 on The Edge in 2017"
+    playlist_2017 = "Top 100 on 102.1 The Edge in 2017"
     create_update_playlist(playlist_2017,song_data_2017,track_id_list,sp,username,pl_names,playlist_ids)
 
-    playlist_all_time = "Top 100 on The Edge of All Time"
+    playlist_all_time = "Top 100 on 102.1 The Edge of All Time"
     create_update_playlist(playlist_all_time,song_data_all_time,track_id_list,sp,username,pl_names,playlist_ids)

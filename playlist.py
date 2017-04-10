@@ -76,12 +76,18 @@ def load_data():
                          (date, json.dumps(data)))
             conn.commit()
 
-        # Create a list of song data from last_week_songs table
+        #
+        # Create a lists of song data tables/views
+        #
+
+        # Top songs from last week:
         cur.execute('select * from last_week_songs order by play_count desc, random()')
-        song_data = cur.fetchall()
+        song_data_top100 = cur.fetchall()
+        # All previously searched songs and ids
         cur.execute('select * from track_id')
         track_list = cur.fetchall()
-        return (song_data,track_list)
+
+        return (song_data_top100,track_list)
 
 def log_in():
     # Log into Spotify and get username

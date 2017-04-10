@@ -99,19 +99,18 @@ def log_in():
 
     # Get a list of playlist names and ids for user
     results = sp.current_user_playlists(limit=50)
-    names = [a['name'] for a in results['items']]
+    pl_names = [a['name'] for a in results['items']]
     playlist_ids = [b['id'] for b in results['items']]
 
-    return (sp,username,names,playlist_ids)
+    return (sp,username,pl_names,playlist_ids)
 
-def top_100(song_data,track_list,sp,username,names,playlist_ids):
+def create_update_playlist(playlist_name,song_data,track_id_list,sp,username,pl_names,playlist_ids):
     # Create a new playlist if it does not exist already,
     # Get playlist id if it does exist
     need_new = True
-    playlist_name = "Top 100 on The Edge"
-    for name in names:
+    for name in pl_names:
         if name == playlist_name:
-            playlist_id = playlist_ids[names.index(name)]
+            playlist_id = playlist_ids[pl_names.index(name)]
             need_new = False
 
     if need_new == True:
@@ -123,7 +122,7 @@ def top_100(song_data,track_list,sp,username,names,playlist_ids):
     track_ids = []
     for i in range(len(song_data)):
         if len(track_ids)<100:
-            new_trackID = find_track_id(song_data[i],track_ids,track_list)
+            new_trackID = find_track_id(song_data[i],track_ids,track_id_list)
         else:
             break
     # Upload songs to Spotify!
@@ -132,6 +131,8 @@ def top_100(song_data,track_list,sp,username,names,playlist_ids):
 
 
 if __name__ == '__main__':
-    (song_data, track_list) = load_data()
-    (sp,username,names,playlist_ids) = log_in()
-    top_100(song_data,track_list,sp,username,names,playlist_ids)
+    (song_data_top100, track_id_list) = load_data()
+    (sp,username,pl_names,playlist_ids) = log_in()
+
+    playlist_name = "Top 100 on The Edge"
+    create_update_playlist(playlist_name,song_data_top100,track_id_list,sp,username,pl_names,playlist_ids)

@@ -6,10 +6,10 @@
   - [ ] Timezone crap
 * DONE expiring song count after x number of days, current common songs only
 * DONE Spotify playlist init
-* TODO Multiple playlists? [1/4]
+* TODO Multiple playlists? [3/4]
   - [X] Top songs of the past week
-  - [ ] Top songs of 2017
-  - [ ] Top songs of "all time"
+  - [X] Top songs of 2017
+  - [X] Top songs of "all time"
   - [ ] Top 25s of all playlists as well
 * DONE Spotify playlist update/re-arrange/etc.
   Don't have to actually do a diff:

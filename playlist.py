@@ -81,13 +81,21 @@ def load_data():
         #
 
         # Top songs from last week:
+        # TODO: fix random ordering so each run doesn't change the playlist by ~15 songs,
+        # some sort of seed would be good
         cur.execute('select * from last_week_songs order by play_count desc, random()')
         song_data_top100 = cur.fetchall()
+
+        # TODO: add top 100 of 2017 playlist
+        #cur.execute('select * from 2017_songs order by play_count desc, random()')
+        #song_data_2017 = cur.fetchall()
+
         # All previously searched songs and ids
         cur.execute('select * from track_id')
         track_list = cur.fetchall()
 
         return (song_data_top100,track_list)
+        # return (song_data_top100,song_data_2017,track_list)
 
 def log_in():
     # Log into Spotify and get username

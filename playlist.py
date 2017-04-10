@@ -90,15 +90,15 @@ def log_in():
     username = cred.spotify_username
     sp = spotipy.Spotify(auth=token)
     sp.trace = False
-    return (sp,username)
 
-def top_100(song_data,track_list,sp,username):
-    # Get a list of playlist names and ids
+    # Get a list of playlist names and ids for user
     results = sp.current_user_playlists(limit=50)
     names = [a['name'] for a in results['items']]
     playlist_ids = [b['id'] for b in results['items']]
 
+    return (sp,username,names,playlist_ids)
 
+def top_100(song_data,track_list,sp,username,names,playlist_ids):
     # Create a new playlist if it does not exist already,
     # Get playlist id if it does exist
     need_new = True
@@ -127,5 +127,5 @@ def top_100(song_data,track_list,sp,username):
 
 if __name__ == '__main__':
     (song_data, track_list) = load_data()
-    (sp,username) = log_in()
-    top_100(song_data,track_list,sp,username)
+    (sp,username,names,playlist_ids) = log_in()
+    top_100(song_data,track_list,sp,username,names,playlist_ids)

@@ -38,3 +38,10 @@ FROM songs
 WHERE play_time >= CAST(strftime('%s', datetime('2017-01-01 00:00:01')) AS INTEGER)
 GROUP BY artist, song
 ORDER BY count(*) DESC;
+
+CREATE VIEW IF NOT EXISTS top_songs_all_time
+AS
+SELECT artist, song, count(*) AS play_count
+FROM songs
+GROUP BY artist, song
+ORDER BY count(*) DESC;

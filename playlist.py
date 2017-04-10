@@ -53,9 +53,7 @@ def find_track_id(song_data,track_ids,track_list):
                 conn.commit()
             break
 
-
-if __name__ == '__main__':
-
+def load_data():
     # Load database and create table, if it doesn't exist already
     with sqlite3.connect('data.db') as conn:
         conn.executescript(open('schema.sql').read())
@@ -83,14 +81,18 @@ if __name__ == '__main__':
         song_data = cur.fetchall()
         cur.execute('select * from track_id')
         track_list = cur.fetchall()
+        return (song_data,track_list)
 
+def log_in():
     # Log into Spotify and get username
     cred = Credentials()
     token = cred.spotify_user_access_token
     username = cred.spotify_username
     sp = spotipy.Spotify(auth=token)
     sp.trace = False
+    return (sp,username)
 
+def top_100(song_data,track_list,sp,username):
     # Get a list of playlist names and ids
     results = sp.current_user_playlists(limit=50)
     names = [a['name'] for a in results['items']]
@@ -105,7 +107,6 @@ if __name__ == '__main__':
         if name == playlist_name:
             playlist_id = playlist_ids[names.index(name)]
             need_new = False
-
 
     if need_new == True:
         playlists = sp.user_playlist_create(username,playlist_name)
@@ -122,3 +123,9 @@ if __name__ == '__main__':
     # Upload songs to Spotify!
     tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
     print(len(track_ids), "songs uploaded to spotify! Enjoy!")
+
+
+if __name__ == '__main__':
+    (song_data, track_list) = load_data()
+    (sp,username) = log_in()
+    top_100(song_data,track_list,sp,username)

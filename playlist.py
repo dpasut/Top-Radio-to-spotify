@@ -143,7 +143,7 @@ if __name__ == '__main__':
     (song_data_top100, song_data_2017, song_data_all_time, track_id_list) = load_data()
     (sp,username,pl_names,playlist_ids) = log_in()
 
-    playlist_name = "Top 100 on 102.1 The Edge"
+    playlist_name = "Top 100 This Week on 102.1 The Edge"
     create_update_playlist(playlist_name,song_data_top100,track_id_list,sp,username,pl_names,playlist_ids)
 
     playlist_2017 = "Top 100 on 102.1 The Edge in 2017"

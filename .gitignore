@@ -4,3 +4,4 @@
 /.cache-*
 /creds.json
 *.pyc
+playlist.log

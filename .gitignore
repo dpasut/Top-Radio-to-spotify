@@ -4,4 +4,5 @@
 /.cache-*
 /creds.json
 *.pyc
-playlist.log
+/playlist.log
+/auto.sh

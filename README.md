@@ -9,6 +9,12 @@
 # Info
 All the songs will be stored in `data.db`, and you can look at them using `sqlite3`. To ensure a working version of `sqlite3`, a Docker image has been included. Once Docker is installed, run `make sqlite3`.
 
-Right now, `playlist.py` creates or updates a single playlist on your spotify account with the top 100 most played songs in the last week. It uploads the songs in order of play count.
+Right now, `playlist.py` creates or updates three playlists on your spotify account with the top 100 most played songs in the last week, all time, and of 2017. It uploads the songs in order of play count.
 
-More playlist options to come.
+# Automation
+A simple bash script, `auto.sh.example` is included to easily keep the playlists up to date with cron. To use:
+1. Copy `auto.sh.example` to `auto.sh`
+2. Type `chmod +x auto.sh` in terminal.
+3. Within `auto.sh`, change `<folder path>` to the correct path.
+1. Type `crontab -e` in your terminal
+2. Add `*/30 * * * * /bin/bash <folder path>/auto.sh` to the bottom of the file, changing `<folder path>` to the correct path. This will run *every* 30 minutes.

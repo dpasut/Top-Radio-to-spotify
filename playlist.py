@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 import json
-import os
 import re
 import requests
 import spotipy
@@ -57,7 +56,7 @@ def find_track_id(song_data,track_ids,track_list):
 def load_data():
     # Load database and create table, if it doesn't exist already
     with sqlite3.connect('data.db') as conn:
-        conn.executescript(open(os.getcwd()+'/schema.sql').read())
+        conn.executescript(open('schema.sql').read())
         cur = conn.cursor()
         # TODO: Fix timezone crap
         cur.execute("select coalesce(max(date(date)), '2016-12-29') from raw_data")

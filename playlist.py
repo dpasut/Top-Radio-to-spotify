@@ -5,6 +5,8 @@ import requests
 import spotipy
 import sqlite3
 import sys
+import hashlib
+import time
 
 from datetime import datetime
 from credentials import Credentials
@@ -66,6 +68,9 @@ def load_data():
     # Load database and create table, if it doesn't exist already
     with sqlite3.connect('data.db') as conn:
         conn.executescript(open('schema.sql').read())
+
+        conn.create_function("md5",2,md5sum)
+
         cur = conn.cursor()
         # TODO: Fix timezone crap
         cur.execute("select coalesce(max(date(date)), '2016-12-29') from raw_data")
@@ -85,20 +90,15 @@ def load_data():
                          (date, json.dumps(data)))
             conn.commit()
 
-        #
-        # Create a lists of song data tables/views
-        #
 
-        # Top songs from last week:
-        # TODO: fix random ordering so each run doesn't change the playlist by ~15 songs,
-        # some sort of seed would be good
-        cur.execute('select * from last_week_songs order by play_count desc, random()')
+
+        cur.execute('select * from last_week_songs order by play_count desc, md5(artist,song)')
         song_data_top100 = cur.fetchall()
 
-        cur.execute('select * from top_songs_2017 order by play_count desc, random()')
+        cur.execute('select * from top_songs_2017 order by play_count desc, md5(artist,song)')
         song_data_2017 = cur.fetchall()
 
-        cur.execute('select * from top_songs_all_time order by play_count desc, random()')
+        cur.execute('select * from top_songs_all_time order by play_count desc, md5(artist,song)')
         song_data_all_time = cur.fetchall()
         # All previously searched songs and ids
         cur.execute('select * from track_id')

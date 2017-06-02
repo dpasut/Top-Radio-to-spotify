@@ -18,13 +18,16 @@ USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Ge
 BASE_LINK = 'http://www.edge.ca/api/v1/music/broadcastHistory?accountID=36&day=-{}'
 
 def md5sum(artist_name, track_name):
+    #
+    # Create a unique 6 digit integer to order songs by with the same number of plays
+    #
+
     interval_value = 604800 # One week
     interval = int(time.time() / interval_value)
     md5 = hashlib.md5()
     md5.update("{}{}{}".format(artist_name,track_name,interval))
     digest = md5.hexdigest()
     number = int(digest[:6], 16)
-    print(number)
     return number
 
 def find_track_id(song_data,track_ids,track_list):
@@ -89,8 +92,6 @@ def load_data():
                          """,
                          (date, json.dumps(data)))
             conn.commit()
-
-
 
         cur.execute('select * from last_week_songs order by play_count desc, md5(artist,song)')
         song_data_top100 = cur.fetchall()

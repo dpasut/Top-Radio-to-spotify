@@ -4,33 +4,34 @@ import re
 import requests
 import spotipy
 import sqlite3
-import sys
 import hashlib
 import time
 
 from datetime import datetime
 from credentials import Credentials
-from pprint import pprint
 from tqdm import tqdm
 
 
-USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/55.0.2883.87 Safari/537.36'
 BASE_LINK = 'http://www.edge.ca/api/v1/music/broadcastHistory?accountID=36&day=-{}'
+
 
 def md5sum(artist_name, track_name):
     #
-    # Create a unique 6 digit integer to order songs by with the same number of plays
+    # Create a unique 6 digit integer to order songs by
+    # with the same number of plays
     #
 
-    interval_value = 604800 # One week
+    interval_value = 604800  # One week
     interval = int(time.time() / interval_value)
     md5 = hashlib.md5()
-    md5.update("{}{}{}".format(artist_name,track_name,interval))
+    md5.update("{}{}{}".format(artist_name, track_name, interval))
     digest = md5.hexdigest()
     number = int(digest[:6], 16)
     return number
 
-def find_track_id(song_data,track_ids,track_list):
+
+def find_track_id(song_data, track_ids, track_list):
     #
     # Find and cache track ids
     #
@@ -53,26 +54,27 @@ def find_track_id(song_data,track_ids,track_list):
 
     # If track was NOT found in track_list table, search spotify,
     # get track id, and update the table
-    if search_new == True:
+    if search_new is True:
         r = sp.search("artist:{} track:{}*".format(artist_name, track_name), type='track')
         for track in r['tracks']['items']:
             trackID = track['id']
             track_ids.append(trackID)
-            #update db
+            # update db
             with sqlite3.connect('data.db') as conn:
                 conn.execute("""
                              INSERT INTO track_id
                              VALUES (?, ?, ?)
-                             """,(trackID,artist_name,track_name))
+                             """, (trackID, artist_name, track_name))
                 conn.commit()
             break
+
 
 def load_data():
     # Load database and create table, if it doesn't exist already
     with sqlite3.connect('data.db') as conn:
         conn.executescript(open('schema.sql').read())
 
-        conn.create_function("md5",2,md5sum)
+        conn.create_function("md5", 2, md5sum)
 
         cur = conn.cursor()
         # TODO: Fix timezone crap
@@ -105,7 +107,8 @@ def load_data():
         cur.execute('select * from track_id')
         track_list = cur.fetchall()
 
-        return (song_data_top100,song_data_2017,song_data_all_time, track_list)
+        return (song_data_top100, song_data_2017, song_data_all_time, track_list)
+
 
 def log_in():
     # Log into Spotify and get username
@@ -120,9 +123,10 @@ def log_in():
     pl_names = [a['name'] for a in results['items']]
     playlist_ids = [b['id'] for b in results['items']]
 
-    return (sp,username,pl_names,playlist_ids)
+    return (sp, username, pl_names, playlist_ids)
 
-def create_update_playlist(playlist_name,song_data,track_id_list,sp,username,pl_names,playlist_ids):
+
+def create_update_playlist(playlist_name, song_data, track_id_list, sp, username, pl_names, playlist_ids):
     # Create a new playlist if it does not exist already,
     # Get playlist id if it does exist
     need_new = True
@@ -131,33 +135,33 @@ def create_update_playlist(playlist_name,song_data,track_id_list,sp,username,pl_
             playlist_id = playlist_ids[pl_names.index(name)]
             need_new = False
 
-    if need_new == True:
-        playlists = sp.user_playlist_create(username,playlist_name)
+    if need_new is True:
+        playlists = sp.user_playlist_create(username, playlist_name)
         playlist_id = playlists['id']
 
     # Find track ids for each song in song_data
     # TODO cache ids for speed improvment
     track_ids = []
     for i in range(len(song_data)):
-        if len(track_ids)<100:
-            new_trackID = find_track_id(song_data[i],track_ids,track_id_list)
+        if len(track_ids) < 100:
+            find_track_id(song_data[i], track_ids, track_id_list)
         else:
             break
 
     # Upload songs to Spotify!
-    tracks = sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
-    print(len(track_ids), "songs uploaded to spotify in playlist",playlist_name)
+    sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
+    print(len(track_ids), "songs uploaded to spotify in playlist", playlist_name)
 
 
 if __name__ == '__main__':
     (song_data_top100, song_data_2017, song_data_all_time, track_id_list) = load_data()
-    (sp,username,pl_names,playlist_ids) = log_in()
+    (sp, username, pl_names, playlist_ids) = log_in()
 
     playlist_name = "Top 100 This Week on 102.1 The Edge"
-    create_update_playlist(playlist_name,song_data_top100,track_id_list,sp,username,pl_names,playlist_ids)
+    create_update_playlist(playlist_name, song_data_top100, track_id_list, sp, username, pl_names, playlist_ids)
 
     playlist_2017 = "Top 100 on 102.1 The Edge in 2017"
-    create_update_playlist(playlist_2017,song_data_2017,track_id_list,sp,username,pl_names,playlist_ids)
+    create_update_playlist(playlist_2017, song_data_2017, track_id_list, sp, username, pl_names, playlist_ids)
 
     playlist_all_time = "Top 100 on 102.1 The Edge of All Time"
-    create_update_playlist(playlist_all_time,song_data_all_time,track_id_list,sp,username,pl_names,playlist_ids)
+    create_update_playlist(playlist_all_time, song_data_all_time, track_id_list, sp, username, pl_names, playlist_ids)

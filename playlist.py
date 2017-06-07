@@ -12,8 +12,10 @@ from credentials import Credentials
 from tqdm import tqdm
 
 
-USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,like Gecko) Chrome/55.0.2883.87 Safari/537.36'
-BASE_LINK = 'http://www.edge.ca/api/v1/music/broadcastHistory?accountID=36&day=-{}'
+USER_AGENT = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, '
+              'like Gecko) Chrome/55.0.2883.87 Safari/537.36')
+BASE_LINK = ('http://www.edge.ca/api/v1/music/broadcastHistory'
+             '?accountID=36&day=-{}')
 
 
 def md5sum(artist_name, track_name):
@@ -45,9 +47,9 @@ def find_track_id(song_data, track_ids, track_list):
 
     # Check if track is in track_list table, if it is, use that track_id
     search_new = True
-    for i in range(len(track_list)):
-        if (artist_name == str(track_list[i][1])) and (track_name == track_list[i][2]):
-            trackID = track_list[i][0]
+    for track in track_list:
+        if (artist_name == str(track[1])) and (track_name == track[2]):
+            trackID = track[0]
             track_ids.append(trackID)
             search_new = False
             break
@@ -55,7 +57,8 @@ def find_track_id(song_data, track_ids, track_list):
     # If track was NOT found in track_list table, search spotify,
     # get track id, and update the table
     if search_new is True:
-        r = sp.search("artist:{} track:{}*".format(artist_name, track_name), type='track')
+        r = sp.search("artist:{} track:{}*".format(artist_name, track_name),
+                      type='track')
         for track in r['tracks']['items']:
             trackID = track['id']
             track_ids.append(trackID)
@@ -78,7 +81,10 @@ def load_data():
 
         cur = conn.cursor()
         # TODO: Fix timezone crap
-        cur.execute("select coalesce(max(date(date)), '2016-12-29') from raw_data")
+        cur.execute('''
+                    select coalesce(max(date(date)), '2016-12-29')
+                    from raw_data
+                    ''')
         min_date = cur.fetchone()[0]
         min_date = datetime(int(min_date[0:4]),
                             int(min_date[5:7]),
@@ -95,19 +101,29 @@ def load_data():
                          (date, json.dumps(data)))
             conn.commit()
 
-        cur.execute('select * from last_week_songs order by play_count desc, md5(artist,song)')
+        cur.execute('''
+                    select * from last_week_songs order by play_count desc,
+                    md5(artist,song)
+                    ''')
         song_data_top100 = cur.fetchall()
 
-        cur.execute('select * from top_songs_2017 order by play_count desc, md5(artist,song)')
+        cur.execute('''
+                    select * from top_songs_2017 order by play_count desc,
+                    md5(artist,song)
+                    ''')
         song_data_2017 = cur.fetchall()
 
-        cur.execute('select * from top_songs_all_time order by play_count desc, md5(artist,song)')
+        cur.execute('''
+                    select * from top_songs_all_time order by play_count desc,
+                    md5(artist,song)
+                    ''')
         song_data_all_time = cur.fetchall()
         # All previously searched songs and ids
         cur.execute('select * from track_id')
         track_list = cur.fetchall()
 
-        return (song_data_top100, song_data_2017, song_data_all_time, track_list)
+        return (song_data_top100, song_data_2017,
+                song_data_all_time, track_list)
 
 
 def log_in():
@@ -126,7 +142,8 @@ def log_in():
     return (sp, username, pl_names, playlist_ids)
 
 
-def create_update_playlist(playlist_name, song_data, track_id_list, sp, username, pl_names, playlist_ids):
+def create_update_playlist(playlist_name, song_data, track_id_list,
+                           sp, username, pl_names, playlist_ids):
     # Create a new playlist if it does not exist already,
     # Get playlist id if it does exist
     need_new = True
@@ -150,18 +167,23 @@ def create_update_playlist(playlist_name, song_data, track_id_list, sp, username
 
     # Upload songs to Spotify!
     sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
-    print(len(track_ids), "songs uploaded to spotify in playlist", playlist_name)
+    print(len(track_ids),
+          "songs uploaded to spotify in playlist", playlist_name)
 
 
 if __name__ == '__main__':
-    (song_data_top100, song_data_2017, song_data_all_time, track_id_list) = load_data()
+    (song_data_top100, song_data_2017,
+     song_data_all_time, track_id_list) = load_data()
     (sp, username, pl_names, playlist_ids) = log_in()
 
     playlist_name = "Top 100 This Week on 102.1 The Edge"
-    create_update_playlist(playlist_name, song_data_top100, track_id_list, sp, username, pl_names, playlist_ids)
+    create_update_playlist(playlist_name, song_data_top100, track_id_list,
+                           sp, username, pl_names, playlist_ids)
 
     playlist_2017 = "Top 100 on 102.1 The Edge in 2017"
-    create_update_playlist(playlist_2017, song_data_2017, track_id_list, sp, username, pl_names, playlist_ids)
+    create_update_playlist(playlist_2017, song_data_2017, track_id_list,
+                           sp, username, pl_names, playlist_ids)
 
     playlist_all_time = "Top 100 on 102.1 The Edge of All Time"
-    create_update_playlist(playlist_all_time, song_data_all_time, track_id_list, sp, username, pl_names, playlist_ids)
+    create_update_playlist(playlist_all_time, song_data_all_time,
+                           track_id_list, sp, username, pl_names, playlist_ids)

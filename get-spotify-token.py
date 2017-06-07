@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 
-import json
 import spotipy.oauth2 as oauth2
 import argparse
 from credentials import Credentials

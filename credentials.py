@@ -4,6 +4,7 @@ import spotipy.oauth2 as oauth2
 scopes = ['playlist-modify-public', 'playlist-modify-private',
           'playlist-read-private', 'playlist-read-collaborative']
 
+
 class Credentials:
     def __init__(self, fn='creds.json'):
         try:

@@ -65,7 +65,7 @@ def find_track_id(song_data, track_ids, track_list):
             # update db
             with sqlite3.connect('data.db') as conn:
                 conn.execute("""
-                             INSERT INTO track_id
+                             INSERT OR REPLACE INTO track_id
                              VALUES (?, ?, ?)
                              """, (trackID, artist_name, track_name))
                 conn.commit()

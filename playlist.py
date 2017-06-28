@@ -14,8 +14,9 @@ from tqdm import tqdm
 
 USER_AGENT = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, '
               'like Gecko) Chrome/55.0.2883.87 Safari/537.36')
-BASE_LINK = ('http://www.edge.ca/api/v1/music/broadcastHistory'
+BASE_LINK_EDGE = ('http://www.edge.ca/api/v1/music/broadcastHistory'
              '?accountID=36&day=-{}')
+BASE_LINK_INDIE = ('http://indie.streamon.fm/eventrange/{}-{}.json')
 
 
 def md5sum(artist_name, track_name):
@@ -72,7 +73,7 @@ def find_track_id(song_data, track_ids, track_list):
             break
 
 
-def load_data():
+def load_data_edge():
     # Load database and create table, if it doesn't exist already
     with sqlite3.connect('data.db') as conn:
         conn.executescript(open('schema.sql').read())
@@ -91,7 +92,7 @@ def load_data():
                             int(min_date[8:10]))
         day_range = (datetime.today() - min_date).days
         for i in tqdm(range(day_range + 1)):
-            data = requests.get(BASE_LINK.format(i),
+            data = requests.get(BASE_LINK_EDGE.format(i),
                                 headers={'User-Agent': USER_AGENT}).json()
             date = data['data']['startDate']
             conn.execute("""
@@ -173,7 +174,7 @@ def create_update_playlist(playlist_name, song_data, track_id_list,
 
 if __name__ == '__main__':
     (song_data_top100, song_data_2017,
-     song_data_all_time, track_id_list) = load_data()
+     song_data_all_time, track_id_list) = load_data_edge()
     (sp, username, pl_names, playlist_ids) = log_in()
 
     playlist_name = "Top 100 This Week on 102.1 The Edge"

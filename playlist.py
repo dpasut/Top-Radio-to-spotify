@@ -38,12 +38,11 @@ def find_track_id(song_data, track_ids, track_list):
     #
     # Find and cache track ids
     #
-
-    artist_name = str(song_data[0])
+    artist_name = str(song_data[1])
 
     # Remove "The" from track names, and stuff between brackets.
     # No one likes alternate song titles
-    track_name = str(song_data[1]).replace('The ', '').strip()
+    track_name = str(song_data[2]).replace('The ', '').strip()
     track_name = re.sub(r'\([^)]*\)', '', track_name)
 
     # Check if track is in track_list table, if it is, use that track_id
@@ -96,8 +95,8 @@ def load_data_edge():
                                 headers={'User-Agent': USER_AGENT}).json()
             date = data['data']['startDate']
             conn.execute("""
-                         INSERT OR REPLACE INTO raw_data (date, data)
-                         SELECT datetime(?, 'start of day'), ?
+                         INSERT OR REPLACE INTO raw_data (station, date, data)
+                         SELECT 'edge', datetime(?, 'start of day'), ?
                          """,
                          (date, json.dumps(data)))
             conn.commit()

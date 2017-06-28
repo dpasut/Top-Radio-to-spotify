@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS raw_data
   data JSONB
 );
 
-CREATE VIEW IF NOT EXISTS songs
+CREATE VIEW IF NOT EXISTS songs_edge
 AS
 WITH base AS
 (
@@ -16,13 +16,23 @@ SELECT json_extract(song, '$.artist_name') AS artist,
        json_extract(song, '$.last_played') AS play_time
 FROM base;
 
-CREATE VIEW IF NOT EXISTS last_week_songs
+CREATE VIEW IF NOT EXISTS songs_indie
 AS
-SELECT artist, song, count(*) AS play_count
-FROM songs
-WHERE play_time >= CAST(strftime('%s', datetime('now', '-7 days')) AS INTEGER)
-GROUP BY artist, song
-ORDER BY count(*) DESC;
+WITH base AS
+(
+  SELECT json_each.value AS song
+  FROM json_each(json(data), '$.data.songs_indie'), raw_data
+)
+SELECT json_extract(song, '$.artist') AS artist,
+       json_extract(song, '$.title') AS song,
+       json_extract(song, '$.time') AS play_time
+FROM base;
+
+CREATE VIEW IF NOT EXISTS songs
+AS
+SELECT * FROM songs_edge
+UNION
+SELECT * FROM songs_indie;
 
 CREATE TABLE IF NOT EXISTS track_id
 (
@@ -30,6 +40,14 @@ CREATE TABLE IF NOT EXISTS track_id
     artist text NOT NULL,
     song text NOT NULL
 );
+
+CREATE VIEW IF NOT EXISTS last_week_songs
+AS
+SELECT artist, song, count(*) AS play_count
+FROM songs
+WHERE play_time >= CAST(strftime('%s', datetime('now', '-7 days')) AS INTEGER)
+GROUP BY artist, song
+ORDER BY count(*) DESC;
 
 CREATE VIEW IF NOT EXISTS top_songs_2017
 AS

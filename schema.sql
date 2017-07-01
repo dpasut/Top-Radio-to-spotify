@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS raw_data
 (
   station TEXT NOT NULL,
-  date TIMESTAMPTZ NOT NULL PRIMARy KEY,
-  data JSONB
+  date TIMESTAMPTZ NOT NULL,
+  data JSONB,
+  PRIMARY KEY (station, date)
 );
 
 CREATE VIEW IF NOT EXISTS songs_edge

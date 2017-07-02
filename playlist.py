@@ -6,6 +6,7 @@ import spotipy
 import sqlite3
 import hashlib
 import time
+import dateutil.parser
 
 from datetime import datetime
 from credentials import Credentials
@@ -112,20 +113,35 @@ def load_data_edge():
         min_date = cur.fetchone()[0]
         min_date = dateutil.parser.parse(min_date)
         day_range = (datetime.today() - min_date).days
+        for i in tqdm(range(day_range + 1)):
+            start_date = int(time.mktime(min_date.timetuple()) + (i * 60 * 60 * 24))
+            end_date = int(min(start_date + (60 * 60 * 24), time.time()))
+            data = get_indie_data(start_date, end_date)
+            date = datetime.strftime(datetime.fromtimestamp(start_date), '%Y-%m-%d %H:%M:%S')
+            if len(data['events']) > 0:
+                conn.execute("""
+                             INSERT OR REPLACE INTO raw_data (station, date, data)
+                             SELECT 'indie', datetime(?, 'start of day'), ?
+                             """,
+                             (date, json.dumps(data)))
+                conn.commit()
+
+
+        # Get views from database
         cur.execute('''
-                    select * from last_week_songs order by play_count desc,
+                    select * from last_week_songs where station = 'edge' order by play_count desc,
                     md5(artist,song)
                     ''')
         song_data_top100 = cur.fetchall()
 
         cur.execute('''
-                    select * from top_songs_2017 order by play_count desc,
+                    select * from top_songs_2017 where station = 'edge' order by play_count desc,
                     md5(artist,song)
                     ''')
         song_data_2017 = cur.fetchall()
 
         cur.execute('''
-                    select * from top_songs_all_time order by play_count desc,
+                    select * from top_songs_all_time where station = 'edge' order by play_count desc,
                     md5(artist,song)
                     ''')
         song_data_all_time = cur.fetchall()

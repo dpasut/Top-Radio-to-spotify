@@ -80,10 +80,12 @@ def load_data_edge():
         conn.create_function("md5", 2, md5sum)
 
         cur = conn.cursor()
-        # TODO: Fix timezone crap
+
+        # Load 102.1 The Edge songs
         cur.execute('''
                     select coalesce(max(date(date)), '2016-12-29')
                     from raw_data
+                    where station = 'edge'
                     ''')
         min_date = cur.fetchone()[0]
         min_date = datetime(int(min_date[0:4]),
@@ -101,6 +103,15 @@ def load_data_edge():
                          (date, json.dumps(data)))
             conn.commit()
 
+        # Load Indie 88.1 songs
+        cur.execute('''
+                    select coalesce(max(date), '2013-08-01 00:00:00')
+                    from raw_data
+                    where station = 'indie'
+                    ''')
+        min_date = cur.fetchone()[0]
+        min_date = dateutil.parser.parse(min_date)
+        day_range = (datetime.today() - min_date).days
         cur.execute('''
                     select * from last_week_songs order by play_count desc,
                     md5(artist,song)
@@ -166,7 +177,7 @@ def create_update_playlist(playlist_name, song_data, track_id_list,
             break
 
     # Upload songs to Spotify!
-    sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
+    #sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
     print(len(track_ids),
           "songs uploaded to spotify in playlist", playlist_name)
 

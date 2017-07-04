@@ -55,7 +55,8 @@ def find_track_id(song_data, track_ids, track_list):
 
     # Remove "The" from track names, and stuff between brackets.
     # No one likes alternate song titles
-    track_name = str(song_data[2]).replace('The ', '').strip()
+    track_name = song_data[2].encode('ascii', 'ignore')
+    track_name = str(track_name).replace('The ', '').strip()
     track_name = re.sub(r'\([^)]*\)', '', track_name)
 
     # Check if track is in track_list table, if it is, use that track_id
@@ -156,12 +157,31 @@ def load_data():
                     md5(artist,song)
                     ''')
         song_data_all_time = cur.fetchall()
+
+
+        cur.execute('''
+                    select * from last_week_songs where station = 'indie' order by play_count desc
+                    limit 200
+                    ''')
+        song_data_top100_indie = cur.fetchall()
+
+        cur.execute('''
+                    select * from top_songs_2017 where station = 'indie' order by play_count desc
+                    limit 200
+                    ''')
+        song_data_2017_indie = cur.fetchall()
+
+        cur.execute('''
+                    select * from top_songs_all_time where station = 'indie' order by play_count desc
+                    limit 200
+                    ''')
+        song_data_all_time_indie = cur.fetchall()
         # All previously searched songs and ids
         cur.execute('select * from track_id')
         track_list = cur.fetchall()
 
-        return (song_data_top100, song_data_2017,
-                song_data_all_time, track_list)
+        return (song_data_top100, song_data_2017, song_data_all_time, song_data_top100_indie,
+                song_data_2017_indie, song_data_all_time_indie, track_list)
 
 
 def log_in():
@@ -204,24 +224,40 @@ def create_update_playlist(playlist_name, song_data, track_id_list,
             break
 
     # Upload songs to Spotify!
-    #sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
+    sp.user_playlist_replace_tracks(username, playlist_id, track_ids)
     print(len(track_ids),
           "songs uploaded to spotify in playlist", playlist_name)
 
 
 if __name__ == '__main__':
-    (song_data_top100, song_data_2017,
-     song_data_all_time, track_id_list) = load_data()
+    (song_data_top100, song_data_2017, song_data_all_time,
+     song_data_top100_indie, song_data_2017_indie,
+     song_data_all_time_indie, track_id_list) = load_data()
+    #(song_data_top100, song_data_2017,
+    # song_data_all_time, track_id_list) = load_data()
+
     (sp, username, pl_names, playlist_ids) = log_in()
 
     playlist_name = "Top 100 This Week on 102.1 The Edge"
     create_update_playlist(playlist_name, song_data_top100, track_id_list,
                            sp, username, pl_names, playlist_ids)
 
-    playlist_2017 = "Top 100 on 102.1 The Edge in 2017"
-    create_update_playlist(playlist_2017, song_data_2017, track_id_list,
-                           sp, username, pl_names, playlist_ids)
+    #playlist_2017 = "Top 100 on 102.1 The Edge in 2017"
+    #create_update_playlist(playlist_2017, song_data_2017, track_id_list,
+    #                      sp, username, pl_names, playlist_ids)
 
     playlist_all_time = "Top 100 on 102.1 The Edge of All Time"
     create_update_playlist(playlist_all_time, song_data_all_time,
+                           track_id_list, sp, username, pl_names, playlist_ids)
+
+    playlist_name = "Top 100 This Week on Indie 88"
+    create_update_playlist(playlist_name, song_data_top100_indie, track_id_list,
+                           sp, username, pl_names, playlist_ids)
+
+    playlist_2017 = "Top 100 on Indie 88 in 2017"
+    create_update_playlist(playlist_2017, song_data_2017_indie, track_id_list,
+                           sp, username, pl_names, playlist_ids)
+
+    playlist_all_time = "Top 100 on Indie 88 of All Time"
+    create_update_playlist(playlist_all_time, song_data_all_time_indie,
                            track_id_list, sp, username, pl_names, playlist_ids)

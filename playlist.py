@@ -17,8 +17,9 @@ from tqdm import tqdm
 USER_AGENT = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, '
               'like Gecko) Chrome/55.0.2883.87 Safari/537.36')
 BASE_LINK_EDGE = ('http://www.edge.ca/api/v1/music/broadcastHistory'
-             '?accountID=36&day=-{}')
+                  '?accountID=36&day=-{}')
 BASE_LINK_INDIE = ('http://indie.streamon.fm/eventrange/{}-{}.json')
+
 
 @tenacity.retry(reraise=True,
                 wait=tenacity.wait_exponential(),
@@ -27,9 +28,13 @@ def get_indie_data(start, end):
     return requests.get(BASE_LINK_INDIE.format(start, end),
                         headers={'User-Agent': USER_AGENT}).json()
 
+
+@tenacity.retry(reraise=True,
+                wait=tenacity.wait_exponential(),
+                stop=tenacity.stop_after_attempt(5))
 def get_edge_data(days_back):
     return requests.get(BASE_LINK_EDGE.format(days_back),
-                                headers={'User-Agent': USER_AGENT}).json()
+                        headers={'User-Agent': USER_AGENT}).json()
 
 
 def md5sum(artist_name, track_name):
@@ -126,53 +131,56 @@ def load_data():
         min_date = dateutil.parser.parse(min_date)
         day_range = (datetime.today() - min_date).days
         for i in tqdm(range(day_range + 1)):
-            start_date = int(time.mktime(min_date.timetuple()) + (i * 60 * 60 * 24))
+            start_date = int(time.mktime(min_date.timetuple())
+                             + (i * 60 * 60 * 24))
             end_date = int(min(start_date + (60 * 60 * 24), time.time()))
             data = get_indie_data(start_date, end_date)
-            date = datetime.strftime(datetime.fromtimestamp(start_date), '%Y-%m-%d %H:%M:%S')
+            date = datetime.strftime(datetime.fromtimestamp(start_date),
+                                     '%Y-%m-%d %H:%M:%S')
             if len(data['events']) > 0:
                 conn.execute("""
-                             INSERT OR REPLACE INTO raw_data (station, date, data)
+                             INSERT OR REPLACE INTO raw_data
+                             (station, date, data)
                              SELECT 'indie', datetime(?, 'start of day'), ?
                              """,
                              (date, json.dumps(data)))
                 conn.commit()
 
-
         # Get views from database
         cur.execute('''
-                    select * from last_week_songs where station = 'edge' order by play_count desc,
+                    select * from last_week_songs where station = 'edge'
+                    order by play_count desc,
                     md5(artist,song)
                     ''')
         song_data_top100 = cur.fetchall()
-
         cur.execute('''
-                    select * from top_songs_2017 where station = 'edge' order by play_count desc,
+                    select * from top_songs_2017 where station = 'edge'
+                    order by play_count desc,
                     md5(artist,song)
                     ''')
         song_data_2017 = cur.fetchall()
-
         cur.execute('''
-                    select * from top_songs_all_time where station = 'edge' order by play_count desc,
+                    select * from top_songs_all_time where station = 'edge'
+                    order by play_count desc,
                     md5(artist,song)
                     ''')
         song_data_all_time = cur.fetchall()
-
-
+        # TODO: Fix md5 for indie songs
         cur.execute('''
-                    select * from last_week_songs where station = 'indie' order by play_count desc
+                    select * from last_week_songs where station = 'indie'
+                    order by play_count desc
                     limit 200
                     ''')
         song_data_top100_indie = cur.fetchall()
-
         cur.execute('''
-                    select * from top_songs_2017 where station = 'indie' order by play_count desc
+                    select * from top_songs_2017 where station = 'indie'
+                    order by play_count desc
                     limit 200
                     ''')
         song_data_2017_indie = cur.fetchall()
-
         cur.execute('''
-                    select * from top_songs_all_time where station = 'indie' order by play_count desc
+                    select * from top_songs_all_time where station = 'indie'
+                    order by play_count desc
                     limit 200
                     ''')
         song_data_all_time_indie = cur.fetchall()
@@ -180,8 +188,9 @@ def load_data():
         cur.execute('select * from track_id')
         track_list = cur.fetchall()
 
-        return (song_data_top100, song_data_2017, song_data_all_time, song_data_top100_indie,
-                song_data_2017_indie, song_data_all_time_indie, track_list)
+        return (song_data_top100, song_data_2017, song_data_all_time,
+                song_data_top100_indie, song_data_2017_indie,
+                song_data_all_time_indie, track_list)
 
 
 def log_in():
@@ -233,17 +242,14 @@ if __name__ == '__main__':
     (song_data_top100, song_data_2017, song_data_all_time,
      song_data_top100_indie, song_data_2017_indie,
      song_data_all_time_indie, track_id_list) = load_data()
-    #(song_data_top100, song_data_2017,
-    # song_data_all_time, track_id_list) = load_data()
-
     (sp, username, pl_names, playlist_ids) = log_in()
 
     playlist_name = "Top 100 This Week on 102.1 The Edge"
     create_update_playlist(playlist_name, song_data_top100, track_id_list,
                            sp, username, pl_names, playlist_ids)
 
-    #playlist_2017 = "Top 100 on 102.1 The Edge in 2017"
-    #create_update_playlist(playlist_2017, song_data_2017, track_id_list,
+    # playlist_2017 = "Top 100 on 102.1 The Edge in 2017"
+    # create_update_playlist(playlist_2017, song_data_2017, track_id_list,
     #                      sp, username, pl_names, playlist_ids)
 
     playlist_all_time = "Top 100 on 102.1 The Edge of All Time"
@@ -251,8 +257,8 @@ if __name__ == '__main__':
                            track_id_list, sp, username, pl_names, playlist_ids)
 
     playlist_name = "Top 100 This Week on Indie 88"
-    create_update_playlist(playlist_name, song_data_top100_indie, track_id_list,
-                           sp, username, pl_names, playlist_ids)
+    create_update_playlist(playlist_name, song_data_top100_indie,
+                           track_id_list, sp, username, pl_names, playlist_ids)
 
     playlist_2017 = "Top 100 on Indie 88 in 2017"
     create_update_playlist(playlist_2017, song_data_2017_indie, track_id_list,

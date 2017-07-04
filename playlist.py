@@ -7,6 +7,7 @@ import sqlite3
 import hashlib
 import time
 import dateutil.parser
+import tenacity
 
 from datetime import datetime
 from credentials import Credentials
@@ -18,6 +19,17 @@ USER_AGENT = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, '
 BASE_LINK_EDGE = ('http://www.edge.ca/api/v1/music/broadcastHistory'
              '?accountID=36&day=-{}')
 BASE_LINK_INDIE = ('http://indie.streamon.fm/eventrange/{}-{}.json')
+
+@tenacity.retry(reraise=True,
+                wait=tenacity.wait_exponential(),
+                stop=tenacity.stop_after_attempt(5))
+def get_indie_data(start, end):
+    return requests.get(BASE_LINK_INDIE.format(start, end),
+                        headers={'User-Agent': USER_AGENT}).json()
+
+def get_edge_data(days_back):
+    return requests.get(BASE_LINK_EDGE.format(days_back),
+                                headers={'User-Agent': USER_AGENT}).json()
 
 
 def md5sum(artist_name, track_name):
@@ -94,8 +106,7 @@ def load_data_edge():
                             int(min_date[8:10]))
         day_range = (datetime.today() - min_date).days
         for i in tqdm(range(day_range + 1)):
-            data = requests.get(BASE_LINK_EDGE.format(i),
-                                headers={'User-Agent': USER_AGENT}).json()
+            data = get_edge_data(i)
             date = data['data']['startDate']
             conn.execute("""
                          INSERT OR REPLACE INTO raw_data (station, date, data)

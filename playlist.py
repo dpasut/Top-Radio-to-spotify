@@ -85,7 +85,7 @@ def find_track_id(song_data, track_ids, track_list):
             break
 
 
-def load_data_edge():
+def load_data():
     # Load database and create table, if it doesn't exist already
     with sqlite3.connect('data.db') as conn:
         conn.executescript(open('schema.sql').read())
@@ -211,7 +211,7 @@ def create_update_playlist(playlist_name, song_data, track_id_list,
 
 if __name__ == '__main__':
     (song_data_top100, song_data_2017,
-     song_data_all_time, track_id_list) = load_data_edge()
+     song_data_all_time, track_id_list) = load_data()
     (sp, username, pl_names, playlist_ids) = log_in()
 
     playlist_name = "Top 100 This Week on 102.1 The Edge"

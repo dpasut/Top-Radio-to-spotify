@@ -43,6 +43,12 @@ def get_edge_data():
                          'lxml')
     date = to_epoch(dateutil.parser.parse(
         soup.find(class_='c-heading--playlist').text))
+    songs = json.loads(requests.get(BASE_LINK_EDGE,
+                                    headers={'User-Agent': USER_AGENT})
+                       .content[:-1].replace('plCallback(', ''))['songs']
+    res = []
+    prev = None
+    offset = 0
 
 
 def md5sum(artist_name, track_name):

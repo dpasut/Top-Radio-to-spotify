@@ -129,25 +129,14 @@ def load_data():
         cur = conn.cursor()
 
         # Load 102.1 The Edge songs
-        cur.execute('''
-                    select coalesce(max(date(date)), '2016-12-29')
-                    from raw_data
-                    where station = 'edge'
-                    ''')
-        min_date = cur.fetchone()[0]
-        min_date = datetime(int(min_date[0:4]),
-                            int(min_date[5:7]),
-                            int(min_date[8:10]))
-        day_range = (datetime.today() - min_date).days
-        for i in tqdm(range(day_range + 1)):
-            data = get_edge_data(i)
-            date = data['data']['startDate']
-            conn.execute("""
-                         INSERT OR REPLACE INTO raw_data (station, date, data)
-                         SELECT 'edge', datetime(?, 'start of day'), ?
-                         """,
-                         (date, json.dumps(data)))
-            conn.commit()
+        data, date = get_edge_data()
+        date = str(arrow.Arrow.fromtimestamp(date))
+        conn.execute("""
+                     INSERT OR REPLACE INTO raw_data (station, date, data)
+                     SELECT 'edge', datetime(?, 'start of day'), ?
+                     """,
+                     (date, json.dumps(data)))
+        conn.commit()
 
         # Load Indie 88.1 songs
         cur.execute('''

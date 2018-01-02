@@ -38,9 +38,11 @@ def get_indie_data(start, end):
 @tenacity.retry(reraise=True,
                 wait=tenacity.wait_exponential(),
                 stop=tenacity.stop_after_attempt(5))
-def get_edge_data(days_back):
-    return requests.get(BASE_LINK_EDGE.format(days_back),
-                        headers={'User-Agent': USER_AGENT}).json()
+def get_edge_data():
+    soup = BeautifulSoup(requests.get('https://edge.ca/music/').content,
+                         'lxml')
+    date = to_epoch(dateutil.parser.parse(
+        soup.find(class_='c-heading--playlist').text))
 
 
 def md5sum(artist_name, track_name):

@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 import json
 import re
+import arrow
 import requests
 import spotipy
 import sqlite3
@@ -11,6 +12,7 @@ import tenacity
 
 from datetime import datetime
 from credentials import Credentials
+from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 

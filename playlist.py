@@ -23,6 +23,10 @@ BASE_LINK_EDGE = ('https://globalnewselection.s3.amazonaws.com/fm-playlist/'
 BASE_LINK_INDIE = ('http://indie.streamon.fm/eventrange/{}-{}.json')
 
 
+def to_epoch(dt):
+    return (dt - datetime(1970, 1, 1)).total_seconds()
+
+
 @tenacity.retry(reraise=True,
                 wait=tenacity.wait_exponential(),
                 stop=tenacity.stop_after_attempt(5))

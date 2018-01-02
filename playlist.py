@@ -49,6 +49,20 @@ def get_edge_data():
     res = []
     prev = None
     offset = 0
+    for s in tqdm(songs):
+        try:
+            if prev == 'PM' and s['date'][-2:] == 'AM':
+                offset += 1
+            prev = s['date'][-2:]
+            time = datetime.strptime(s['date'], "%H:%M%p")
+            time = (60 * 60 * time.hour) + (60 * time.minute) + time.second
+            time = date + time - (offset * 60 * 60 * 24)
+        except:
+            continue
+        res.append({'artist_name': s['artist'],
+                    'song_name': s['song'],
+                    'last_played': int(time)})
+    return {'data': {'songs': res}}, int(date)
 
 
 def md5sum(artist_name, track_name):

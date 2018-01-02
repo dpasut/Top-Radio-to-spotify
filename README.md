@@ -17,4 +17,4 @@ A simple bash script, `auto.sh.example` is included to easily keep the playlists
 2. Type `chmod +x auto.sh` in terminal.
 3. Within `auto.sh`, change `<folder path>` to the correct path.
 1. Type `crontab -e` in your terminal
-2. Add `*/30 * * * * /bin/bash <folder path>/auto.sh` to the bottom of the file, changing `<folder path>` to the correct path. This will run *every* 30 minutes.
+2. Add `0 * * * * /bin/bash <folder path>/auto.sh` to the bottom of the file, changing `<folder path>` to the correct path. This will run *every* 30 minutes.

@@ -40,9 +40,9 @@ def get_indie_data(start, end):
                 stop=tenacity.stop_after_attempt(5))
 def get_edge_data():
     soup = BeautifulSoup(requests.get('https://edge.ca/music/').content,
-                         'lxml')
+                         'html.parser')
     date = to_epoch(dateutil.parser.parse(
-        soup.find(class_='c-heading--playlist').text))
+        soup.find(id='playlist-select').findAll('option')[2].text.strip()))
     songs = json.loads(requests.get(BASE_LINK_EDGE,
                                     headers={'User-Agent': USER_AGENT})
                        .content[:-1].replace('plCallback(', ''))['songs']

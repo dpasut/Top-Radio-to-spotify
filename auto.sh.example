@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cd <folder path>
-/usr/bin/python2 playlist.py &> playlist.log
+/usr/bin/make run &> playlist.log

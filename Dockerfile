@@ -1,4 +1,6 @@
-FROM stephank/archlinux:arm-latest
+FROM pritunl/archlinux:2017-03-18
+
+RUN sed -i s+mirror.pritunl.com/archlinux+archive.archlinux.org/repos+ /etc/pacman.d/mirrorlist
 
 RUN pacman -Syy --noconfirm && pacman -S --noconfirm python2 python2-pip && rm /var/cache/pacman/pkg/*
 

@@ -1,3 +1,9 @@
+**This application is once again under development. LOTS will change over the coming weeks. Sorry for the lack of development in the last few months.**
+
+# Getting your spotify credentials
+1. Go to <https://developer.spotify.com/dashboard/applications> and create your application.
+2. Visit the dashboard of your application and get the client id, this is your `spotify_id` and client secret, this is your `spotify_secret`. Your `spotify_username` is the username used to create the application on the Spotify website. 
+
 # Setup
 1. Copy `creds.json.example` to `creds.json`, and fill in your `spotify_id`, `spotify_secret`, and `spotify_username`.
 2. Run `get-spotify-token.py <your-spotify-username>` and follow the instructions to get a token for accessing your playlist stuff. Put this in your `creds.json` file.

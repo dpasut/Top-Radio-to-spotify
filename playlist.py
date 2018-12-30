@@ -84,8 +84,8 @@ def find_track_id(song_data, track_ids, track_list):
     #
     # Find and cache track ids
     #
-	artist_name = song_data[1].encode('utf8', 'replace')
-    #artist_name = str(song_data[1])
+	artist_name = song_data[1].encode('ascii', 'ignore')
+    # artist_name = str(song_data[1])
 
     # Remove "The" from track names, and stuff between brackets.
     # No one likes alternate song titles

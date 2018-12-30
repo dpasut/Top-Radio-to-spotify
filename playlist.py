@@ -84,11 +84,11 @@ def find_track_id(song_data, track_ids, track_list):
     #
     # Find and cache track ids
     #
-    artist_name = str(song_data[1])
+    artist_name = song_data[1].encode('utf-8')
 
     # Remove "The" from track names, and stuff between brackets.
     # No one likes alternate song titles
-    track_name = song_data[2].encode('ascii', 'ignore')
+    track_name = song_data[2].encode('utf-8')
     track_name = str(track_name).replace('The ', '').strip()
     track_name = re.sub(r'\([^)]*\)', '', track_name)
 
@@ -171,11 +171,11 @@ def load_data():
                     ''')
         song_data_top100 = cur.fetchall()
         cur.execute('''
-                    select * from top_songs_2017 where station = 'edge'
+                    select * from top_songs_2018 where station = 'edge'
                     order by play_count desc,
                     md5(artist,song)
                     ''')
-        song_data_2017 = cur.fetchall()
+        song_data_2018 = cur.fetchall()
         cur.execute('''
                     select * from top_songs_all_time where station = 'edge'
                     order by play_count desc,
@@ -190,11 +190,11 @@ def load_data():
                     ''')
         song_data_top100_indie = cur.fetchall()
         cur.execute('''
-                    select * from top_songs_2017 where station = 'indie'
+                    select * from top_songs_2018 where station = 'indie'
                     order by play_count desc
                     limit 200
                     ''')
-        song_data_2017_indie = cur.fetchall()
+        song_data_2018_indie = cur.fetchall()
         cur.execute('''
                     select * from top_songs_all_time where station = 'indie'
                     order by play_count desc
@@ -205,8 +205,8 @@ def load_data():
         cur.execute('select * from track_id')
         track_list = cur.fetchall()
 
-        return (song_data_top100, song_data_2017, song_data_all_time,
-                song_data_top100_indie, song_data_2017_indie,
+        return (song_data_top100, song_data_2018, song_data_all_time,
+                song_data_top100_indie, song_data_2018_indie,
                 song_data_all_time_indie, track_list)
 
 
@@ -256,8 +256,8 @@ def create_update_playlist(playlist_name, song_data, track_id_list,
 
 
 if __name__ == '__main__':
-    (song_data_top100, song_data_2017, song_data_all_time,
-     song_data_top100_indie, song_data_2017_indie,
+    (song_data_top100, song_data_2018, song_data_all_time,
+     song_data_top100_indie, song_data_2018_indie,
      song_data_all_time_indie, track_id_list) = load_data()
     (sp, username, pl_names, playlist_ids) = log_in()
 
@@ -265,9 +265,9 @@ if __name__ == '__main__':
     create_update_playlist(playlist_name, song_data_top100, track_id_list,
                            sp, username, pl_names, playlist_ids)
 
-    # playlist_2017 = "Top 100 on 102.1 The Edge in 2017"
-    # create_update_playlist(playlist_2017, song_data_2017, track_id_list,
-    #                      sp, username, pl_names, playlist_ids)
+    playlist_2018 = "Top 100 on 102.1 The Edge in 2018"
+    create_update_playlist(playlist_2018, song_data_2018, track_id_list,
+                          sp, username, pl_names, playlist_ids)
 
     playlist_all_time = "Top 100 on 102.1 The Edge of All Time"
     create_update_playlist(playlist_all_time, song_data_all_time,
@@ -277,8 +277,8 @@ if __name__ == '__main__':
     create_update_playlist(playlist_name, song_data_top100_indie,
                            track_id_list, sp, username, pl_names, playlist_ids)
 
-    playlist_2017 = "Top 100 on Indie 88 in 2017"
-    create_update_playlist(playlist_2017, song_data_2017_indie, track_id_list,
+    playlist_2018 = "Top 100 on Indie 88 in 2018"
+    create_update_playlist(playlist_2018, song_data_2018_indie, track_id_list,
                            sp, username, pl_names, playlist_ids)
 
     playlist_all_time = "Top 100 on Indie 88 of All Time"

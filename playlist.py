@@ -261,26 +261,26 @@ if __name__ == '__main__':
      song_data_all_time_indie, track_id_list) = load_data()
     (sp, username, pl_names, playlist_ids) = log_in()
 
-    #playlist_name = "Top 100 This Week on 102.1 The Edge"
-    #create_update_playlist(playlist_name, song_data_top100, track_id_list,
-    #                       sp, username, pl_names, playlist_ids)
+    playlist_name = "Top 100 This Week on 102.1 The Edge"
+    create_update_playlist(playlist_name, song_data_top100, track_id_list,
+                           sp, username, pl_names, playlist_ids)
 
     playlist_2018 = "Top 100 on 102.1 The Edge in 2018"
     create_update_playlist(playlist_2018, song_data_2018, track_id_list,
                           sp, username, pl_names, playlist_ids)
 
-    #playlist_all_time = "Top 100 on 102.1 The Edge of All Time"
-    #create_update_playlist(playlist_all_time, song_data_all_time,
-    #                       track_id_list, sp, username, pl_names, playlist_ids)
+    playlist_all_time = "Top 100 on 102.1 The Edge of All Time"
+    create_update_playlist(playlist_all_time, song_data_all_time,
+                           track_id_list, sp, username, pl_names, playlist_ids)
 
-    #playlist_name = "Top 100 This Week on Indie 88"
-    #create_update_playlist(playlist_name, song_data_top100_indie,
-    #                       track_id_list, sp, username, pl_names, playlist_ids)
+    playlist_name = "Top 100 This Week on Indie 88"
+    create_update_playlist(playlist_name, song_data_top100_indie,
+                           track_id_list, sp, username, pl_names, playlist_ids)
 
     playlist_2018 = "Top 100 on Indie 88 in 2018"
     create_update_playlist(playlist_2018, song_data_2018_indie, track_id_list,
                            sp, username, pl_names, playlist_ids)
 
-    #playlist_all_time = "Top 100 on Indie 88 of All Time"
-    #create_update_playlist(playlist_all_time, song_data_all_time_indie,
-    #                       track_id_list, sp, username, pl_names, playlist_ids)
+    playlist_all_time = "Top 100 on Indie 88 of All Time"
+    create_update_playlist(playlist_all_time, song_data_all_time_indie,
+                           track_id_list, sp, username, pl_names, playlist_ids)

@@ -63,6 +63,14 @@ WHERE play_time >= CAST(strftime('%s', datetime('2017-01-01 00:00:01')) AS INTEG
 AND play_time <= CAST(strftime('%s', datetime('2018-01-01 00:00:01')) AS INTEGER)
 GROUP BY station, artist, song;
 
+CREATE VIEW IF NOT EXISTS top_songs_2018
+AS
+SELECT station, artist, song, count(*) AS play_count
+FROM songs
+WHERE play_time >= CAST(strftime('%s', datetime('2018-01-01 00:00:01')) AS INTEGER)
+AND play_time <= CAST(strftime('%s', datetime('2019-01-01 00:00:01')) AS INTEGER)
+GROUP BY station, artist, song;
+
 CREATE VIEW IF NOT EXISTS top_songs_all_time
 AS
 SELECT station, artist, song, count(*) AS play_count

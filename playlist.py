@@ -95,8 +95,7 @@ def find_track_id(song_data, track_ids, track_list):
     # Check if track is in track_list table, if it is, use that track_id
     search_new = True
     for track in track_list:
-        #if (artist_name == str(track[1])) and (track_name == track[2]):
-        if (artist_name == u' '.join((track[1])).encode('utf-8').strip()) and (track_name == track[2]):
+        if (artist_name == track[1].encode('utf8', 'replace')) and (track_name == track[2]):
             trackID = track[0]
             track_ids.append(trackID)
             search_new = False

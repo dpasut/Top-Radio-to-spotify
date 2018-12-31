@@ -1,5 +1,12 @@
 **This application is once again under development. LOTS will change over the coming weeks. Sorry for the lack of development in the last few months.**
 
+# TODO
+1. export of song spotify uri's from database as csv
+2. import of song uri csv 
+3. ensure all songs in playlists are correct version  -- no live/acustic versions
+4. switch to utf-8 instead of ascii
+5. switch to python 3.X
+
 # Getting your spotify credentials
 1. Go to <https://developer.spotify.com/dashboard/applications> and create your application.
 2. Visit the dashboard of your application and get the client id, this is your `spotify_id` and client secret, this is your `spotify_secret`. Your `spotify_username` is the username used to create the application on the Spotify website. 
